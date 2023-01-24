@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
 {
     public int speed;
 
-    bool moving;
+    public bool moving;
 
     Vector3 currentPos;
     Vector3 targetPos;
@@ -37,7 +37,8 @@ public class PlayerMovement : MonoBehaviour
         {
             if (c.transform.position != _startPos)
             {
-                paths.Add(c.gameObject.transform.position);
+                var _c = new Vector3(c.transform.position.x, 0, c.transform.position.z);
+                paths.Add(_c);
             }
         }
 
@@ -59,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 step += speed * Time.deltaTime;
 
-                transform.position = Vector3.MoveTowards(currentPos, targetPos, step);
+                transform.position = Vector3.MoveTowards(currentPos, new Vector3(targetPos.x, 0, targetPos.z), step);
             }
 
             return false;
@@ -69,21 +70,43 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitUntil(_arrived);
     }
 
+    public void FindMovement(Vector3 vector3)
+    {
+        if (!moving)
+        {
+            targetPos = vector3;
+
+            bool _foundTile = false;
+            foreach (Vector3 v in nextPath)
+            {
+                if (Vector3.Distance(targetPos, v) < 2f)
+                {
+                    targetPos = v;
+                    _foundTile = true;
+                    break;
+                }
+            }
+
+            if (moving)
+            {
+                nextPos = targetPos;
+                nextPath = FindPath(nextPos);
+            }
+            else if (_foundTile)
+            {
+                moving = true;
+                StartCoroutine(MoveTo());
+            }
+        }
+    }
+
     private void Update()
     {
-        if (gameObject.GetComponent<Rigidbody>().velocity == Vector3.zero)
-        {
-            moving = false;
-        }
-        else
-        {
-            moving = true;
-        }
-
-        if (Vector3.Distance(gameObject.transform.position, targetPos) < 0.01f)
+        if (Vector3.Distance(gameObject.transform.position, new Vector3(targetPos.x , 0, targetPos.z)) < 0.01f)
         {
             currentPos = targetPos;
             nextPath = FindPath(currentPos);
+            moving = false;
             if (nextPos == null)
             {
 
@@ -92,95 +115,22 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            targetPos = new Vector3(currentPos.x + 12, currentPos.y, currentPos.z);
-
-            foreach(Vector3 v in nextPath)
-            {
-                if (Vector3.Distance(targetPos, v) < 2f) 
-                {
-                    targetPos = v;
-                }
-            }
-
-            if (moving)
-            {
-                nextPos = targetPos;
-                nextPath = FindPath(nextPos);
-            }
-            else
-            {
-                StartCoroutine( MoveTo());
-            }
+            FindMovement(new Vector3 (currentPos.x + 12, currentPos.y, currentPos.z));
         }
 
         if (Input.GetKeyDown(KeyCode.S))
         {
-            targetPos = new Vector3(currentPos.x - 12, currentPos.y, currentPos.z);
-
-            foreach (Vector3 v in nextPath)
-            {
-                if (Vector3.Distance(targetPos, v) < 2f)
-                {
-                    targetPos = v;
-                }
-            }
-
-
-            if (moving)
-            {
-                nextPos = targetPos;
-                nextPath = FindPath(nextPos);
-            }
-            else
-            {
-                StartCoroutine( MoveTo());
-            }
+            FindMovement(new Vector3(currentPos.x - 12, currentPos.y, currentPos.z));
         }
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            targetPos = new Vector3(currentPos.x, currentPos.y, currentPos.z + 12);
-
-            foreach (Vector3 v in nextPath)
-            {
-                if (Vector3.Distance(targetPos, v) < 2f)
-                {
-                    targetPos = v;
-                }
-            }
-
-            if (moving)
-            {
-                nextPos = targetPos;
-                nextPath = FindPath(nextPos);
-            }
-            else
-            {
-                StartCoroutine( MoveTo());
-            }
+            FindMovement(new Vector3(currentPos.x, currentPos.y, currentPos.z + 12));
         }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            targetPos = new Vector3(currentPos.x, currentPos.y, currentPos.z - 12);
-
-            foreach (Vector3 v in nextPath)
-            {
-                if (Vector3.Distance(targetPos, v) < 2f)
-                {
-                    targetPos = v;
-                }
-            }
-
-            if (moving)
-            {
-                nextPos = targetPos;
-                nextPath = FindPath(nextPos);
-            }
-            else
-            {
-                StartCoroutine( MoveTo());
-            }
+            FindMovement(new Vector3(currentPos.x, currentPos.y, currentPos.z - 12));
         }
     }
 }
