@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44402242, g: 0.49316543, b: 0.5722324, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -977,6 +977,7 @@ GameObject:
   - component: {fileID: 175358634}
   - component: {fileID: 175358638}
   - component: {fileID: 175358639}
+  - component: {fileID: 175358640}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1095,7 +1096,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 116
+  m_Constraints: 126
   m_CollisionDetection: 0
 --- !u!114 &175358639
 MonoBehaviour:
@@ -1110,7 +1111,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 25
+  moving: 0
+  currentPos: {x: 0, y: 0, z: 0}
+  targetPos: {x: 0, y: 0, z: 0}
+  nextPos: {x: 0, y: 0, z: 0}
+  prevPos: {x: 0, y: 0, z: 0}
+  delayedPos: {x: 0, y: 0, z: 0}
   nextPath: []
+  borderX: 45
+  borderZ: 45
+--- !u!114 &175358640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175358633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc17c175c67da4b44bc0f00d40a83251, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Debug: 0
+  ammo: 0
+  bulletSpeed: 50
+  bullet: {fileID: 5974868165570327755, guid: 4209c2a659244d34b907dbccdbb86040, type: 3}
 --- !u!1 &181702506
 GameObject:
   m_ObjectHideFlags: 0

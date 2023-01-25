@@ -1,27 +1,37 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public int speed;
+    public float speed;
 
-    public bool moving;
+    public bool moving = false;
 
-    Vector3 currentPos;
-    Vector3 targetPos;
-    Vector3 nextPos;
+    public Vector3 currentPos;
+    public Vector3 targetPos;
+    public Vector3 nextPos;
+    public Vector3 prevPos;
+    public Vector3 delayedPos = Vector3.zero;
 
     public List<Vector3> nextPath = new List<Vector3>();
 
     LayerMask layerMask;
 
+    float x;
+    float z;
+
+    public float borderX;
+    public float borderZ;
+
     void Start()
     {
         currentPos = transform.position;
+        prevPos = currentPos;
 
         layerMask = LayerMask.GetMask("Path");
         nextPath = FindPath(currentPos);
@@ -68,11 +78,22 @@ public class PlayerMovement : MonoBehaviour
 
 
         yield return new WaitUntil(_arrived);
+
+        if (nextPos == Vector3.zero)
+        {
+            prevPos = currentPos;
+            currentPos = targetPos;
+        }
+        else
+        {
+            prevPos = currentPos;
+            currentPos = targetPos;
+            FindMovement(nextPos);
+        }
     }
 
     public void FindMovement(Vector3 vector3)
     {
-        if (!moving)
         {
             targetPos = vector3;
 
@@ -87,50 +108,113 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
 
-            if (moving)
+            if (_foundTile)
             {
-                nextPos = targetPos;
-                nextPath = FindPath(nextPos);
-            }
-            else if (_foundTile)
-            {
-                moving = true;
+                nextPath = FindPath(targetPos);
+
                 StartCoroutine(MoveTo());
+
+                x = targetPos.x - currentPos.x;
+                z = targetPos.z - currentPos.z;
+
+                if (delayedPos == Vector3.zero)
+                {
+                    nextPos = new Vector3(targetPos.x + x, 0, targetPos.z + z);
+                }
+                else
+                {
+                    nextPos = new Vector3(delayedPos.x + x, 0 , delayedPos.z+ z);
+                    delayedPos = Vector3.zero;
+                }
+            }
+            else
+            {
+                if (Mathf.Abs(nextPos.x) > borderX || Mathf.Abs(nextPos.z) > borderZ)
+                {
+                    nextPos = Vector3.zero;
+                }
+                else
+                {
+                    x = currentPos.x - prevPos.x;
+                    z = currentPos.z - prevPos.z;
+
+                    targetPos = new Vector3(currentPos.x + x, 0, currentPos.z + z);
+
+                    delayedPos = nextPos;
+                    FindMovement(targetPos);
+                }
             }
         }
     }
 
     private void Update()
     {
-        if (Vector3.Distance(gameObject.transform.position, new Vector3(targetPos.x , 0, targetPos.z)) < 0.01f)
-        {
-            currentPos = targetPos;
-            nextPath = FindPath(currentPos);
-            moving = false;
-            if (nextPos == null)
-            {
+        //if (Vector3.Distance(gameObject.transform.position, new Vector3(targetPos.x, 0, targetPos.z)) < 0.01f && !moving)
+        //{
+        //    moving = true;
+        //    if (nextPos == Vector3.zero)
+        //    {
+        //        currentPos = targetPos;
+        //    }
+        //    else
+        //    {
+        //        currentPos = targetPos;
+        //        FindMovement(nextPos);
+        //    }
+        //}
 
-            }
-        }
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            FindMovement(new Vector3 (currentPos.x + 12, currentPos.y, currentPos.z));
+            if (nextPos == Vector3.zero)
+            {
+                FindMovement(new Vector3(currentPos.x + 12, 0, currentPos.z));
+            }
+            else
+            {
+                nextPos = new Vector3(targetPos.x + 12, 0, targetPos.z);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.S))
         {
-            FindMovement(new Vector3(currentPos.x - 12, currentPos.y, currentPos.z));
+            if (nextPos == Vector3.zero)
+            {
+                FindMovement(new Vector3(currentPos.x - 12, 0, currentPos.z));
+            }
+            else
+            {
+                nextPos = new Vector3(targetPos.x - 12,0, targetPos.z);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            FindMovement(new Vector3(currentPos.x, currentPos.y, currentPos.z + 12));
+            if (nextPos == Vector3.zero)
+            {
+                FindMovement(new Vector3(currentPos.x, 0, currentPos.z + 12));
+            }
+            else
+            {
+                nextPos = new Vector3(targetPos.x, 0, targetPos.z + 12);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            FindMovement(new Vector3(currentPos.x, currentPos.y, currentPos.z - 12));
+            if (nextPos == Vector3.zero)
+            {
+                FindMovement(new Vector3(currentPos.x, 0, currentPos.z - 12));
+            }
+            else
+            {
+                nextPos = new Vector3(targetPos.x, 0, targetPos.z - 12);
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            nextPos = Vector3.zero;
         }
     }
 }
