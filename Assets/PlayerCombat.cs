@@ -12,6 +12,12 @@ public class PlayerCombat : MonoBehaviour
     public float bulletCooldown;
     public GameObject bullet;
 
+    [Space(10)]
+    public GameObject upBarrel;
+    public GameObject downBarrel;
+    public GameObject leftBarrel;
+    public GameObject rightBarrel;
+
     public enum AmmoType
     {
         bullet,
@@ -68,28 +74,28 @@ public class PlayerCombat : MonoBehaviour
     {
         if (ammoType == AmmoType.bullet)
         {
-            if (Input.GetKeyDown(KeyCode.I) && upFire)
+            if (Input.GetKeyDown(KeyCode.I) && upFire && upBarrel.GetComponent<Barrel>().clear)
             {
                 Fire(new Vector3(bulletSpeed, 0, 0));
                 upFire = false;
                 StartCoroutine(refreshGunUp());
             }
 
-            if (Input.GetKeyDown(KeyCode.K) && downFire)
+            if (Input.GetKeyDown(KeyCode.K) && downFire && downBarrel.GetComponent<Barrel>().clear)
             {
                 Fire(new Vector3(-bulletSpeed, 0, 0));
                 downFire = false;
                 StartCoroutine(refreshGunDown());
             }
 
-            if (Input.GetKeyDown(KeyCode.J) && leftFire)
+            if (Input.GetKeyDown(KeyCode.J) && leftFire && leftBarrel.GetComponent<Barrel>().clear)
             {
                 Fire(new Vector3(0, 0, bulletSpeed));
                 leftFire = false;
                 StartCoroutine(refreshGunLeft());
             }
 
-            if (Input.GetKeyDown(KeyCode.L) && rightFire)
+            if (Input.GetKeyDown(KeyCode.L) && rightFire && rightBarrel.GetComponent<Barrel>().clear)
             {
                 Fire(new Vector3(0, 0, -bulletSpeed));
                 rightFire = false;

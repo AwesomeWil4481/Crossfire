@@ -9,17 +9,15 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float speed;
-
     public bool invincible = false;
-    bool moving = false;
 
-    public Vector3 currentPos;
-    public Vector3 targetPos;
-    public Vector3 nextPos;
-    public Vector3 prevPos;
-    public Vector3 delayedPos = Vector3.zero;
+    Vector3 currentPos;
+    Vector3 targetPos;
+    Vector3 nextPos;
+    Vector3 prevPos;
+    Vector3 delayedPos = Vector3.zero;
 
-    public List<Vector3> nextPath = new List<Vector3>();
+    List<Vector3> nextPath = new List<Vector3>();
 
     LayerMask layerMask;
 
@@ -28,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
 
     public float borderX;
     public float borderZ;
+
+
 
     void Start()
     {
