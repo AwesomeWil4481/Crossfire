@@ -146,14 +146,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1cab98bf38077542a33c25834ceb1ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startLocation: {fileID: 0}
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   bullet: {fileID: 1333565517563829455, guid: fd7cfd1ac3371da44a5d23eadfe49bfb, type: 3}
   speed: 15
   moving: 0
+  onMap: 0
   currentPos: {x: 0, y: 0, z: 0}
   targetPos: {x: 0, y: 0, z: 0}
   nextPos: {x: 0, y: 0, z: 0}
   prevPos: {x: 0, y: 0, z: 0}
   delayedPos: {x: 0, y: 0, z: 0}
   nextPath: []
-  borderX: 0
-  borderZ: 0
+  borderX: 45
+  borderZ: 45

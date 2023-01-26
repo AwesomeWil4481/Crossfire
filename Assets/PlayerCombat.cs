@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
-    public bool Debug = false;
-
-    public int ammo;
+    [Space(10)]
+    public bool debugAmmo = false;
+    public int bulletAmmo;
     public int bulletSpeed;
-
+    public float bulletCooldown;
     public GameObject bullet;
 
     public enum AmmoType
@@ -17,45 +18,83 @@ public class PlayerCombat : MonoBehaviour
         laser,
         rocket
     }
-
+    [Space(10)]
     public AmmoType ammoType = AmmoType.bullet;
 
     public void Fire(Vector3 _velocity)
     {
         if (ammoType == AmmoType.bullet)
         {
-            if (ammo > 0)
+            if (bulletAmmo > 0)
             {
-                var t = Instantiate(bullet, new Vector3(gameObject.transform.position.x + _velocity.x / (bulletSpeed * 5), 0, gameObject.transform.position.z + _velocity.z / (bulletSpeed * 5)), Quaternion.identity);
+                var t = Instantiate(bullet, new Vector3(gameObject.transform.position.x, 0, gameObject.transform.position.z), Quaternion.identity);
                 t.GetComponent<Rigidbody>().velocity = _velocity;
             }
 
-            if (!Debug && ammo > 0)
+            if (!debugAmmo && bulletAmmo > 0)
             {
-                ammo--;
+                bulletAmmo--;
             }
         }
     }
+
+    bool upFire = true;
+    bool downFire = true;
+    bool leftFire = true;
+    bool rightFire = true;
+
+    IEnumerator refreshGunUp()
+    {
+        yield return new WaitForSecondsRealtime(bulletCooldown);
+        yield return upFire = true;
+    }
+    IEnumerator refreshGunDown()
+    {
+        yield return new WaitForSecondsRealtime(bulletCooldown);
+        yield return downFire = true;
+    }
+    IEnumerator refreshGunLeft()
+    {
+        yield return new WaitForSecondsRealtime(bulletCooldown);
+        yield return leftFire = true;
+    }
+    IEnumerator refreshGunRight()
+    {
+        yield return new WaitForSecondsRealtime(bulletCooldown);
+        yield return rightFire = true;
+    }
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (ammoType == AmmoType.bullet)
         {
-            Fire(new Vector3(bulletSpeed,0,0));
-        }
+            if (Input.GetKeyDown(KeyCode.I) && upFire)
+            {
+                Fire(new Vector3(bulletSpeed, 0, 0));
+                upFire = false;
+                StartCoroutine(refreshGunUp());
+            }
 
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Fire(new Vector3(-bulletSpeed, 0, 0));
-        }
+            if (Input.GetKeyDown(KeyCode.K) && downFire)
+            {
+                Fire(new Vector3(-bulletSpeed, 0, 0));
+                downFire = false;
+                StartCoroutine(refreshGunDown());
+            }
 
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            Fire(new Vector3(0, 0, bulletSpeed));
-        }
+            if (Input.GetKeyDown(KeyCode.J) && leftFire)
+            {
+                Fire(new Vector3(0, 0, bulletSpeed));
+                leftFire = false;
+                StartCoroutine(refreshGunLeft());
+            }
 
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            Fire(new Vector3(0, 0, -bulletSpeed));
+            if (Input.GetKeyDown(KeyCode.L) && rightFire)
+            {
+                Fire(new Vector3(0, 0, -bulletSpeed));
+                rightFire = false;
+                StartCoroutine(refreshGunRight());
+            }
         }
     }
 }

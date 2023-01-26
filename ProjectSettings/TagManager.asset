@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Path
   - Enemy
+  - PlayerProjectile
   layers:
   - Default
   - TransparentFX
@@ -15,14 +16,14 @@ TagManager:
   - UI
   - Path
   - Entity
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Spawn Path 1
+  - Spawn Path 2
+  - Spawn Path 3
+  - Spawn Path 4
+  - Spawn Path 5
+  - Spawn Path 6
+  - Spawn Path 7
+  - Spawn Path 8
   - 
   - 
   - 

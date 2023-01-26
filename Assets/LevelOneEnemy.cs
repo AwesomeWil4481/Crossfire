@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class LevelOneEnemy : MonoBehaviour
+public class LevelOneEnemy : Entity
 {
     public GameObject bullet;
 
     public float speed;
 
     public bool moving = false;
+    public bool onMap = false;
 
     public Vector3 currentPos;
     public Vector3 targetPos;
@@ -18,8 +20,6 @@ public class LevelOneEnemy : MonoBehaviour
 
     public List<Vector3> nextPath = new List<Vector3>();
 
-    LayerMask layerMask;
-
     float x;
     float z;
 
@@ -28,12 +28,11 @@ public class LevelOneEnemy : MonoBehaviour
 
     int num;
 
-    void Start()
+    public override void StartMovement()
     {
         currentPos = transform.position;
         prevPos = currentPos;
 
-        layerMask = LayerMask.GetMask("Path");
         nextPath = FindPath(currentPos);
 
         num = Random.Range(0, nextPath.Count);
@@ -101,9 +100,12 @@ public class LevelOneEnemy : MonoBehaviour
             {
                 if (n == 0)
                 {
-                    var t = Instantiate(bullet, new Vector3(gameObject.transform.position.x + (x / 3), 0, gameObject.transform.position.z + (z / 3)), Quaternion.identity);
+                    if (onMap)
+                    {
+                        var t = Instantiate(bullet, new Vector3(gameObject.transform.position.x + (x / 3), 0, gameObject.transform.position.z + (z / 3)), Quaternion.identity);
 
-                    t.GetComponent<Rigidbody>().velocity = new Vector3(x * 3, 0, z * 3);
+                        t.GetComponent<Rigidbody>().velocity = new Vector3(x * 3, 0, z * 3);
+                    }
                 }
             }
 
@@ -138,20 +140,21 @@ public class LevelOneEnemy : MonoBehaviour
                 num = Random.Range(0, nextPath.Count);
                 nextPos = nextPath[num];
             }
-            else
+
+            if (Enumerable.Range(1, 4).Contains(int.Parse(startLocation.name)))
             {
-                if (Mathf.Abs(nextPos.x) > borderX || Mathf.Abs(nextPos.z) > borderZ)
+                if (Mathf.Abs(nextPos.x) < borderX)
                 {
-                    nextPos = Vector3.zero;
+                    layerMask = LayerMask.GetMask("Path");
+                    onMap = true;
                 }
-                else
+            }
+            else if (Enumerable.Range(5, 8).Contains(int.Parse(startLocation.name)))
+            {
+                if (Mathf.Abs(nextPos.z) < borderZ)
                 {
-                    x = currentPos.x - prevPos.x;
-                    z = currentPos.z - prevPos.z;
-
-                    targetPos = new Vector3(currentPos.x + x, 0, currentPos.z + z);
-
-                    FindMovement(targetPos);
+                    layerMask = LayerMask.GetMask("Path");
+                    onMap = true;
                 }
             }
         }

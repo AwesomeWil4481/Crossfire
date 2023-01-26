@@ -10,7 +10,8 @@ public class PlayerMovement : MonoBehaviour
 {
     public float speed;
 
-    public bool moving = false;
+    public bool invincible = false;
+    bool moving = false;
 
     public Vector3 currentPos;
     public Vector3 targetPos;
