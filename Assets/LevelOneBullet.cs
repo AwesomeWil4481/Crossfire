@@ -20,8 +20,17 @@ public class LevelOneBullet : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            if (!collision.gameObject.GetComponent<PlayerMovement>().invincible)
+            if (!collision.gameObject.name.Contains("Player Demo"))
             {
+                if (!collision.gameObject.GetComponent<PlayerMovement>().invincible)
+                {
+                    Destroy(collision.gameObject);
+                }
+            }
+            else
+            {
+                Instantiate(collision.gameObject, collision.gameObject.GetComponent<PlayerDemo>().startLocation.transform.position, Quaternion.identity);
+
                 Destroy(collision.gameObject);
             }
         }
