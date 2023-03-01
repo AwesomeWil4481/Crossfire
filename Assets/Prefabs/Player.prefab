@@ -643,7 +643,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc17c175c67da4b44bc0f00d40a83251, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugAmmo: 1
+  debugAmmo: 0
   bulletAmmo: 20
   bulletSpeed: 50
   bulletCooldown: 0.5
