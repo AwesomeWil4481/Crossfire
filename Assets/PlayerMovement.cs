@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Unity.VisualScripting;
 using UnityEditor;
@@ -27,7 +28,16 @@ public class PlayerMovement : MonoBehaviour
     public float borderX;
     public float borderZ;
 
+    public enum MovementDirection
+    {
+        Stopped,
+        Up,
+        Down,
+        Left,
+        Right
+    }
 
+    public MovementDirection movementDirection;
 
     void Start()
     {
@@ -58,8 +68,31 @@ public class PlayerMovement : MonoBehaviour
 
     public IEnumerator MoveTo()
     {
-        var step = speed * Time.deltaTime;
+        if (x != 0)
+        {
+            if ( x < 1) // if the player is moving up
+            {
+                movementDirection = MovementDirection.Up;
+            }
+            else if (x > 1) // if the player is moving down
+            {
+                movementDirection = MovementDirection.Down;
+            }
+        }
 
+        if (z != 0)
+        {
+            if (z < 1) // if the player is moving right
+            {
+                movementDirection = MovementDirection.Right;
+            }
+            else if (z > 1) // if the player is moving left
+            {
+                movementDirection = MovementDirection.Left;
+            }
+        }
+
+        var step = speed * Time.deltaTime;
 
         bool _arrived()
         {
@@ -84,11 +117,46 @@ public class PlayerMovement : MonoBehaviour
         {
             prevPos = currentPos;
             currentPos = targetPos;
+            movementDirection = MovementDirection.Stopped;
         }
         else
         {
             prevPos = currentPos;
             currentPos = targetPos;
+            FindMovement(nextPos);
+        }
+    }
+
+    public IEnumerator ReverseMove(Vector3 _targetPos, Vector3 _currentPos)
+    {
+        var step = speed * Time.deltaTime;
+
+        bool _arrived()
+        {
+            if (Vector3.Distance(gameObject.transform.position, _targetPos) < 0.001f)
+            {
+                return true;
+            }
+            else
+            {
+                step += speed * Time.deltaTime;
+
+                transform.position = Vector3.MoveTowards(_currentPos, new Vector3(_targetPos.x, 0, _targetPos.z), step);
+            }
+
+            return false;
+        }
+
+        yield return new WaitUntil(_arrived);
+
+        if (nextPos == Vector3.zero)
+        {
+
+        }
+        else
+        {
+            nextPos = new Vector3(currentPos.x - x,0,currentPos.z - z);
+
             FindMovement(nextPos);
         }
     }
@@ -156,14 +224,14 @@ public class PlayerMovement : MonoBehaviour
             if (nextPos == Vector3.zero)
             {
                 FindMovement(new Vector3(currentPos.x + 12, 0, currentPos.z));
+                movementDirection = MovementDirection.Up;
             }
-            else if (x < -11)
+            else if (movementDirection == MovementDirection.Down)
             {
-                print("pressed w, reversing");
                 StopAllCoroutines();
 
-                targetPos = prevPos;
-                StartCoroutine(MoveTo());
+                movementDirection = MovementDirection.Up;
+                StartCoroutine(ReverseMove(prevPos, gameObject.transform.position));
             }
             else
             {
@@ -178,15 +246,14 @@ public class PlayerMovement : MonoBehaviour
             if (nextPos == Vector3.zero)
             {
                 FindMovement(new Vector3(currentPos.x - 12, 0, currentPos.z));
+                movementDirection = MovementDirection.Down;
             }
-            else if (x > 11)
+            else if (movementDirection == MovementDirection.Up)
             {
-                print("pressed s, reversing");
                 StopAllCoroutines();
 
-                targetPos = prevPos;
-                StartCoroutine(MoveTo());
-
+                movementDirection = MovementDirection.Down;
+                StartCoroutine(ReverseMove(prevPos, gameObject.transform.position));
             }
             else
             {
@@ -201,14 +268,14 @@ public class PlayerMovement : MonoBehaviour
             if (nextPos == Vector3.zero)
             {
                 FindMovement(new Vector3(currentPos.x, 0, currentPos.z + 12));
+                movementDirection = MovementDirection.Left;
             }
-            else if (z < -11)
+            else if (movementDirection == MovementDirection.Right)
             {
-                print("pressed a, reversing");
                 StopAllCoroutines();
 
-                targetPos = prevPos;
-                StartCoroutine(MoveTo());
+                movementDirection = MovementDirection.Left;
+                StartCoroutine(ReverseMove(prevPos, gameObject.transform.position));
             }
             else
             {
@@ -223,14 +290,14 @@ public class PlayerMovement : MonoBehaviour
             if (nextPos == Vector3.zero)
             {
                 FindMovement(new Vector3(currentPos.x, 0, currentPos.z - 12));
+                movementDirection = MovementDirection.Right;
             }
-            else if(z > 11)
+            else if (movementDirection == MovementDirection.Left)
             {
-                print("pressed d, reversing");
                 StopAllCoroutines();
 
-                targetPos = prevPos;
-                StartCoroutine(MoveTo());
+                movementDirection = MovementDirection.Right;
+                StartCoroutine(ReverseMove(prevPos, gameObject.transform.position));
             }
             else
             {
