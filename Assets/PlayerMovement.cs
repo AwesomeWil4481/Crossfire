@@ -150,26 +150,20 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        //if (Vector3.Distance(gameObject.transform.position, new Vector3(targetPos.x, 0, targetPos.z)) < 0.01f && !moving)
-        //{
-        //    moving = true;
-        //    if (nextPos == Vector3.zero)
-        //    {
-        //        currentPos = targetPos;
-        //    }
-        //    else
-        //    {
-        //        currentPos = targetPos;
-        //        FindMovement(nextPos);
-        //    }
-        //}
-
-
         if (Input.GetKeyDown(KeyCode.W))
         {
+            print("x = " + x);
             if (nextPos == Vector3.zero)
             {
                 FindMovement(new Vector3(currentPos.x + 12, 0, currentPos.z));
+            }
+            else if (x < -11)
+            {
+                print("pressed w, reversing");
+                StopAllCoroutines();
+
+                targetPos = prevPos;
+                StartCoroutine(MoveTo());
             }
             else
             {
@@ -179,9 +173,20 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.S))
         {
+            print("x = " + x);
+
             if (nextPos == Vector3.zero)
             {
                 FindMovement(new Vector3(currentPos.x - 12, 0, currentPos.z));
+            }
+            else if (x > 11)
+            {
+                print("pressed s, reversing");
+                StopAllCoroutines();
+
+                targetPos = prevPos;
+                StartCoroutine(MoveTo());
+
             }
             else
             {
@@ -191,9 +196,19 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.A))
         {
+            print("z = " + z);
+
             if (nextPos == Vector3.zero)
             {
                 FindMovement(new Vector3(currentPos.x, 0, currentPos.z + 12));
+            }
+            else if (z < -11)
+            {
+                print("pressed a, reversing");
+                StopAllCoroutines();
+
+                targetPos = prevPos;
+                StartCoroutine(MoveTo());
             }
             else
             {
@@ -203,9 +218,19 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.D))
         {
+            print("z = " + z);
+
             if (nextPos == Vector3.zero)
             {
                 FindMovement(new Vector3(currentPos.x, 0, currentPos.z - 12));
+            }
+            else if(z > 11)
+            {
+                print("pressed d, reversing");
+                StopAllCoroutines();
+
+                targetPos = prevPos;
+                StartCoroutine(MoveTo());
             }
             else
             {
