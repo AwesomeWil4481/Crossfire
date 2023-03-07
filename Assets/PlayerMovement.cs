@@ -24,6 +24,8 @@ public class PlayerMovement : MonoBehaviour
 
     float x;
     float z;
+    float driftX;
+    float driftZ;
 
     public float borderX;
     public float borderZ;
@@ -204,9 +206,11 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else
                 {
-                    x = currentPos.x - prevPos.x;
-                    z = currentPos.z - prevPos.z;
+                    x = currentPos.x - prevPos.x - driftX;
+                    z = currentPos.z - prevPos.z - driftZ;
 
+                    driftX = 0;
+                    driftZ = 0;
                     targetPos = new Vector3(currentPos.x + x, 0, currentPos.z + z);
 
                     delayedPos = nextPos;
@@ -231,6 +235,8 @@ public class PlayerMovement : MonoBehaviour
                 StopAllCoroutines();
 
                 movementDirection = MovementDirection.Up;
+                driftX = -12;
+                driftZ = 0;
                 StartCoroutine(ReverseMove(prevPos, gameObject.transform.position));
             }
             else
@@ -253,6 +259,8 @@ public class PlayerMovement : MonoBehaviour
                 StopAllCoroutines();
 
                 movementDirection = MovementDirection.Down;
+                driftX = 12;
+                driftZ = 0;
                 StartCoroutine(ReverseMove(prevPos, gameObject.transform.position));
             }
             else
@@ -275,6 +283,8 @@ public class PlayerMovement : MonoBehaviour
                 StopAllCoroutines();
 
                 movementDirection = MovementDirection.Left;
+                driftX = 0;
+                driftZ = -12;
                 StartCoroutine(ReverseMove(prevPos, gameObject.transform.position));
             }
             else
@@ -297,6 +307,8 @@ public class PlayerMovement : MonoBehaviour
                 StopAllCoroutines();
 
                 movementDirection = MovementDirection.Right;
+                driftX = 0;
+                driftZ = 12;
                 StartCoroutine(ReverseMove(prevPos, gameObject.transform.position));
             }
             else
