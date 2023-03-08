@@ -22,7 +22,6 @@ public class UserInterface : MonoBehaviour
     {
         if (player.GetComponent<PlayerCombat>().debugAmmo == false)
         {
-            print("Ammo On");
             ammoText.enabled = true;
             ammoCount = player.GetComponent<PlayerCombat>().bulletAmmo;
             ammoNumber = maxAmmo.Substring(0, ammoCount);
@@ -30,7 +29,6 @@ public class UserInterface : MonoBehaviour
         }
         else if (player.GetComponent<PlayerCombat>().debugAmmo == true)
         {
-            print("Ammo Off");
             ammoText.enabled = false;
         }
     }
