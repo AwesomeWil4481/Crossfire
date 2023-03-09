@@ -10,8 +10,7 @@ public class Bullet : MonoBehaviour
 
         if (collision.gameObject.tag == "Enemy")
         {
-            GameObject.Find("Enemy Spawner").GetComponent<EnemySpawner>().SpawnEnemy(collision.gameObject.GetComponent<Entity>().startLocation);
-            Destroy(collision.gameObject);
+            collision.gameObject.GetComponent<Entity>().KillThisEnemy();
         }
 
         if (collision.gameObject.tag != "Player" && collision.gameObject.tag != "PlayerProjectile")

@@ -28,6 +28,11 @@ public class LevelOneEnemy : Entity
 
     int num;
 
+    private void Start()
+    {
+        score = 100;
+    }
+
     public override void StartMovement()
     {
         currentPos = transform.position;
@@ -40,6 +45,16 @@ public class LevelOneEnemy : Entity
         targetPos = nextPath[num];
 
         FindMovement(targetPos);
+    }
+
+    public ParticleSystem explosion;
+
+    public override void KillThisEnemy()
+    {
+        GameObject.Find("Enemy Spawner").GetComponent<EnemySpawner>().SpawnEnemy(gameObject.GetComponent<Entity>().startLocation);
+        ScoreCounter.totalScore += gameObject.GetComponent<Entity>().score;
+        Instantiate(explosion, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     public List<Vector3> FindPath(Vector3 _startPos)

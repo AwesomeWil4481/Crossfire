@@ -9,7 +9,10 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public GameObject halo;
+
     public Rigidbody playerBody;
+
     public bool invincible = true;
     public LayerMask walls;
 
@@ -30,8 +33,32 @@ public class PlayerMovement : MonoBehaviour
 
     public Vector3 desiredMovement;
 
+    bool wantToStop = false;
+
+    Color startColor;
+
+    private void Start()
+    {
+        startColor = gameObject.GetComponent<Renderer>().material.color;
+    }
     private void Update()
     {
+        if (gameObject.GetComponent<PlayerMovement>().invincible)
+        {
+            gameObject.GetComponent<Renderer>().material.color = Color.white;
+            halo.SetActive(true);
+        }
+        else
+        {
+            gameObject.GetComponent<Renderer>().material.color = startColor;
+            halo.SetActive(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            wantToStop = true;
+        }
+
         if (Input.GetKeyDown(KeyCode.W) && !currentTile.name.Contains("W"))
         {
             Vector3 _move = new Vector3(speed, 0, 0);
@@ -151,7 +178,13 @@ public class PlayerMovement : MonoBehaviour
 
         yield return new WaitUntil(_arrived);
 
-        if (desiredMovement != null && desiredMovement != Vector3.zero)
+        if (wantToStop)
+        {
+            playerBody.velocity = Vector3.zero;
+            wantToStop = false;
+        }
+
+        else if (desiredMovement != null && desiredMovement != Vector3.zero)
         {
             Vector3 _nextMove = currentTile.transform.position;
 
@@ -166,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
                 // S
                 else if (desiredMovement.x < -1)
                 {
-                    _nextMove = new Vector3(currentTile.transform.position.x - 11, currentTile.transform.position.y, currentTile.transform.position.z);
+                    _nextMove = new Vector3(currentTile.transform.position.x + -11, currentTile.transform.position.y, currentTile.transform.position.z);
                 }
             }
             else if (desiredMovement.z != 0)
@@ -174,13 +207,13 @@ public class PlayerMovement : MonoBehaviour
                 // A
                 if (desiredMovement.z > 1)
                 {
-                    _nextMove = new Vector3(currentTile.transform.position.x, currentTile.transform.position.y, currentTile.transform.position.z - 12);
+                    _nextMove = new Vector3(currentTile.transform.position.x, currentTile.transform.position.y, currentTile.transform.position.z + 11);
                 }
 
                 // D
                 else if (desiredMovement.z < -1) 
                 {
-                    _nextMove = new Vector3(currentTile.transform.position.x, currentTile.transform.position.y, currentTile.transform.position.z - 11);
+                    _nextMove = new Vector3(currentTile.transform.position.x, currentTile.transform.position.y, currentTile.transform.position.z + -11);
                 }
             }
 
@@ -234,5 +267,42 @@ public class PlayerMovement : MonoBehaviour
                 playerBody.velocity = Vector3.zero;
             }
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.tag == "Enemy")
+        {
+            collision.gameObject.GetComponent<Entity>().KillThisEnemy();
+
+            KillPlayer();
+        }
+    }
+
+    public ParticleSystem explode;
+
+    public void KillPlayer()
+    {
+        if (!gameObject.GetComponent<PlayerMovement>().invincible)
+        {
+            ScoreCounter.totalScore = 0;
+            gameObject.GetComponent<PlayerCombat>().bulletAmmo = 20;
+
+            Instantiate(explode, gameObject.transform.position, Quaternion.identity);
+
+            gameObject.transform.position = new Vector3(-0.01124992f, 0, -0.004998401f);
+            gameObject.GetComponent<PlayerMovement>().wantToStop = true;
+            gameObject.GetComponent<PlayerMovement>().invincible = true;
+            
+
+            StartCoroutine(InvincibilityFrames());
+        }
+    }
+
+    IEnumerator InvincibilityFrames()
+    {
+        yield return new WaitForSecondsRealtime(3f);
+
+        gameObject.GetComponent<PlayerMovement>().invincible = false;
     }
 }

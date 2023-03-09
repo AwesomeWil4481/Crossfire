@@ -8,5 +8,9 @@ public abstract class Entity : MonoBehaviour
 
     public LayerMask layerMask;
 
+    public int score;
+
     public abstract void StartMovement();
+
+    public abstract void KillThisEnemy();
 }

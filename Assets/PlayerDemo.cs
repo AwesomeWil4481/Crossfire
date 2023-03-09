@@ -51,6 +51,11 @@ public class PlayerDemo : Entity
         FindMovement(targetPos);
     }
 
+    public override void KillThisEnemy()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public List<Vector3> FindPath(Vector3 _startPos)
     {
         List<Vector3> paths = new List<Vector3>();

@@ -27,13 +27,13 @@ public class PlayerCombat : MonoBehaviour
     [Space(10)]
     public AmmoType ammoType = AmmoType.bullet;
 
-    public void Fire(Vector3 _velocity)
+    public void Fire(Vector3 _velocity, Vector3 _position)
     {
         if (ammoType == AmmoType.bullet)
         {
             if (bulletAmmo > 0)
             {
-                var t = Instantiate(bullet, new Vector3(gameObject.transform.position.x, 0, gameObject.transform.position.z), Quaternion.identity);
+                var t = Instantiate(bullet, _position, Quaternion.identity);
                 t.GetComponent<Rigidbody>().velocity = _velocity;
             }
 
@@ -76,28 +76,28 @@ public class PlayerCombat : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.I) && upFire && upBarrel.GetComponent<Barrel>().clear)
             {
-                Fire(new Vector3(bulletSpeed, 0, 0));
+                Fire(new Vector3(bulletSpeed, 0, 0), new Vector3(gameObject.transform.position.x + 0.35f, 0, gameObject.transform.position.z));
                 upFire = false;
                 StartCoroutine(refreshGunUp());
             }
 
             if (Input.GetKeyDown(KeyCode.K) && downFire && downBarrel.GetComponent<Barrel>().clear)
             {
-                Fire(new Vector3(-bulletSpeed, 0, 0));
+                Fire(new Vector3(-bulletSpeed, 0, 0), new Vector3(gameObject.transform.position.x + -0.35f, 0 , gameObject.transform.position.z));
                 downFire = false;
                 StartCoroutine(refreshGunDown());
             }
 
             if (Input.GetKeyDown(KeyCode.J) && leftFire && leftBarrel.GetComponent<Barrel>().clear)
             {
-                Fire(new Vector3(0, 0, bulletSpeed));
+                Fire(new Vector3(0, 0, bulletSpeed), new Vector3(gameObject.transform.position.x, 0, gameObject.transform.position.z + 0.35f));
                 leftFire = false;
                 StartCoroutine(refreshGunLeft());
             }
 
             if (Input.GetKeyDown(KeyCode.L) && rightFire && rightBarrel.GetComponent<Barrel>().clear)
             {
-                Fire(new Vector3(0, 0, -bulletSpeed));
+                Fire(new Vector3(0, 0, -bulletSpeed) , new Vector3(gameObject.transform.position.x, 0, gameObject.transform.position.z + -0.35f));
                 rightFire = false;
                 StartCoroutine(refreshGunRight());
             }
